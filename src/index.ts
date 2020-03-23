@@ -62,12 +62,15 @@ type ExpandedBlock = {
 
 const database = 'vechain'
 const measurement = 'blocks'
-const writeOptions: IWriteOptions = { precision: 's' }
+const writeOptions: IWriteOptions = { precision: 's', database }
 
 const networks: { [index: string]: string } = {
     '0x00000000851caf3cfdb6e899cf5958bfb1ac3413d346d43539627e6be7ec1b4a': 'main',
     '0x000000000b2bce3c70bc649a02749e8687721b09ed2e15997f466536b20bb127': 'test'
 }
+
+const nodeURL = process.argv[2] || 'http://localhost:8669'
+const influxdbURL = process.argv[3] || 'http://localhost:8086'
 
 async function newBlockFetcher(url: string) {
     const axios = Axios.create({
@@ -105,6 +108,7 @@ function buildRow(network: string, b: ExpandedBlock): IPoint {
         },
         fields: {
             num: b.number,
+            timestamp: b.timestamp,
             size: b.size,
             gasLimit: b.gasLimit,
             gasUsed: b.gasUsed,
@@ -127,15 +131,15 @@ function buildRow(network: string, b: ExpandedBlock): IPoint {
 }
 
 async function sync() {
-    const db = new InfluxDB({
-        host: 'localhost',
-        database,
-    })
-    await db.createDatabase(database)
-    let start = await db.query<{ max_num: number }>('select last(num) as max_num from blocks')
-        .then(results => results[0] ? (results[0].max_num || 0) : 0)
 
-    const blockFetcher = await newBlockFetcher('http://localhost:8669')
+    const blockFetcher = await newBlockFetcher(nodeURL)
+    const db = new InfluxDB(influxdbURL)
+
+    await db.createDatabase(database)
+    let start = await db.query<{ max_num: number }>(
+        `select last(num) as max_num from blocks where network='${blockFetcher.network}'`,
+        { database })
+        .then(results => results[0] ? (results[0].max_num || 0) : 0)
 
     console.log('connected to VeChain network:', blockFetcher.network)
 
@@ -180,7 +184,9 @@ async function sync() {
                 timeToWait = (block.timestamp + 60) * 1000 - Date.now()
                 start = block.number + 1
             }
-            await new Promise(resolve => setTimeout(resolve, timeToWait))
+            if (timeToWait > 0) {
+                await new Promise(resolve => setTimeout(resolve, timeToWait))
+            }
         }
     } finally {
         clearInterval(timer)
