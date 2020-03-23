@@ -130,6 +130,10 @@ function buildRow(network: string, b: ExpandedBlock): IPoint {
     }
 }
 
+function sleep(ms: number) {
+    return new Promise(resolve => setTimeout(resolve, ms))
+}
+
 async function sync() {
 
     const blockFetcher = await newBlockFetcher(nodeURL)
@@ -150,7 +154,7 @@ async function sync() {
     }, 1000)
 
     try {
-        const times = 10
+        const times = 20
         const concurrent = 50
 
         for (; ;) {
@@ -161,7 +165,7 @@ async function sync() {
                 if (!b) {
                     return false
                 }
-                return (b.timestamp + 60) < now / 1000
+                return (b.timestamp + 30) < now / 1000
             }) as ExpandedBlock[]
 
             if (confirmedBlocks.length > 0) {
@@ -180,12 +184,14 @@ async function sync() {
             const block = await blockFetcher.getBlock(start)
             let timeToWait = 10 * 1000
             if (block) {
-                await db.writeMeasurement(measurement, [buildRow(blockFetcher.network, block)], writeOptions)
-                timeToWait = (block.timestamp + 60) * 1000 - Date.now()
-                start = block.number + 1
+                timeToWait = (block.timestamp + 30) * 1000 - Date.now()
+                if (timeToWait < 0) {
+                    await db.writeMeasurement(measurement, [buildRow(blockFetcher.network, block)], writeOptions)
+                    start = block.number + 1
+                }
             }
             if (timeToWait > 0) {
-                await new Promise(resolve => setTimeout(resolve, timeToWait))
+                await sleep(timeToWait)
             }
         }
     } finally {
@@ -200,6 +206,6 @@ async function sync() {
         } catch (err) {
             console.log(err)
         }
-        await new Promise(resolve => setTimeout(resolve, 10 * 1000))
+        await sleep(20 * 1000)
     }
 })()
