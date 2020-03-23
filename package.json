@@ -3,11 +3,16 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "start": "ts-node ./src/index.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "rm -rf dist;tsc -p .",
+    "prepare": "npm run build",
+    "dev": "ts-node ./src/index.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"        
   },
-  "author": "",
-  "license": "ISC",
+  "bin": {
+      "block-measure": "dist/index.js"
+  },
+  "author": "qianbin",
+  "license": "MIT",
   "devDependencies": {
     "@types/node": "^13.9.2",
     "ts-node": "^8.7.0",
