@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import { InfluxDB, IPoint, IWriteOptions } from 'influx'
 import Axios from 'axios'
 import * as http from 'http'
