@@ -1,4 +1,4 @@
-# VeChain Block Measurement
+# VeStatus
 
 Small script to build Influxdb measurement of VeChain blocks.
 
@@ -10,18 +10,18 @@ Small script to build Influxdb measurement of VeChain blocks.
 ## Installation
 
 ```
-$ npm i -g block-measurement
+$ npm i -g @vechain/vestatus
 ```
 ## Startup
 
 Suppose VeChain node and Influxdb are running locally and using default settings, then just:
 ```
-$ block-measure
+$ vestatus
 ```
 
 Or point to remote VeChain node or Influxdb:
 ```
-$ block-measure <URL-of-VeChain-node-API> <URL-of-Influxdb>
+$ vestatus <URL-of-VeChain-node-API> <URL-of-Influxdb>
 ```
 
 If all things go well, you'll see something like:
@@ -32,7 +32,7 @@ imported block 1023
 
 ## Dashboard
 
-A prebuilt dashboard config file can be found at [./dashboard/VeChain Blocks.json](dashboard/VeChain%20Blocks.json). Import it into your Grafana and enjoy.
+A prebuilt dashboard config file can be found at [./dashboard/model.json](dashboard/model.json). Import it into your Grafana and enjoy.
 
 ![dashboard](dashboard/screenshot.png)
 

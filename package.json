@@ -1,18 +1,34 @@
 {
-  "name": "block-measurement",
-  "version": "1.0.1",
-  "description": "",
+  "name": "@vechain/vestatus",
+  "version": "0.9.0",
+  "description": "Small script to build Influxdb measurement of VeChain blocks",
   "scripts": {
     "build": "rm -rf dist;tsc -p .",
     "prepare": "npm run build",
     "dev": "ts-node ./src/index.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"        
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "bin": {
-      "block-measure": "dist/index.js"
+    "vestatus": "dist/index.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vechain/vestatus.git"
+  },
+  "keywords": [
+    "vechain",
+    "thor",
+    "blockchain",
+    "influxdb",
+    "grafana",
+    "monitor"
+  ],
   "author": "qianbin",
   "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/vechain/vestatus/issues"
+  },
+  "homepage": "https://github.com/vechain/vestatus#readme",
   "devDependencies": {
     "@types/node": "^13.9.2",
     "ts-node": "^8.7.0",
