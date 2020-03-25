@@ -150,9 +150,13 @@ async function sync() {
     console.log('connected to VeChain network:', blockFetcher.network)
 
     const timer = setInterval(() => {
-        process.stdout.clearLine(0)
-        process.stdout.cursorTo(0)
-        process.stdout.write(`imported block ${start}`)
+        if (process.stdout.clearLine) {
+            process.stdout.clearLine(0)
+            process.stdout.cursorTo(0)
+            process.stdout.write(`imported block ${start}`)
+        } else {
+            process.stdout.write(`imported block ${start}\n`)
+        }
     }, 1000)
 
     try {
